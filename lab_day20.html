@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BudgetBuddy AI — Day 20 Retention, Engagement & Habit Loop">
+  <title>BudgetBuddy AI — Day 20 Retention, Engagement & Habit Loop</title>
+  <style>
+    :root {
+      --ink: #1e293b;
+      --muted: #64748b;
+      --paper: #f1f5f9;
+      --surface: #ffffff;
+      --soft: #e2e8f0;
+      --line: rgba(255,255,255,0.4);
+      --navy: #0f172a;
+      --blue: #3b82f6;
+      --cyan: #e0f2fe;
+      --orange: #f97316;
+      --orange-soft: #fff7ed;
+      --green: #10b981;
+      --green-soft: #ecfdf5;
+      --yellow: #eab308;
+      --yellow-soft: #fefce8;
+      --red: #ef4444;
+      --red-soft: #fef2f2;
+      --purple: #8b5cf6;
+      --purple-soft: #f5f3ff;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 20px 40px -5px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.06);
+      --radius: 24px;
+      --font-display: "Outfit", Cambria, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 15% 5%, rgba(59, 130, 246, 0.15), transparent 30rem),
+        radial-gradient(circle at 85% 90%, rgba(249, 115, 22, 0.12), transparent 40rem),
+        #f1f5f9;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { touch-action: manipulation; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px clamp(18px, 4vw, 54px);
+      color: #fff;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(24px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15), inset 0 -1px 0 rgba(255,255,255,0.05);
+      border-bottom: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 220px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      color: #ea580c;
+      background: linear-gradient(135deg, #ffffff 0%, #ffedd5 100%);
+      font-weight: 900;
+      box-shadow: 
+        0 8px 16px rgba(249, 115, 22, 0.25), 
+        inset 0 2px 0 rgba(255,255,255,1), 
+        inset 0 -2px 0 rgba(0,0,0,0.05);
+    }
+
+    .brand strong { display: block; letter-spacing: -.02em; }
+    .brand small { display: block; color: #bdd0df; font-size: 11px; }
+
+    .top-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .top-meta span {
+      padding: 6px 9px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      color: #dce8f0;
+      font-size: 11px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      max-width: 1500px;
+      min-height: calc(100vh - 69px);
+      margin: 0 auto;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 69px;
+      align-self: start;
+      height: calc(100vh - 69px);
+      padding: 24px 14px 30px;
+      overflow-y: auto;
+      border-right: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(20px);
+      box-shadow: 1px 0 20px rgba(0,0,0,0.02);
+    }
+
+    .nav-label {
+      margin: 15px 10px 7px;
+      color: #89919a;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .nav-label:first-child { margin-top: 0; }
+
+    .nav-button {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 8px;
+      align-items: center;
+      margin: 3px 0;
+      padding: 9px 10px;
+      border: 0;
+      border-radius: 11px;
+      color: #53606d;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .nav-button:hover { color: var(--navy); background: #f0eee7; }
+    .nav-button.active {
+      color: var(--navy);
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      box-shadow:  4px 4px 12px rgba(0,0,0,0.05), -4px -4px 12px #ffffff, inset 0 1px 0 rgba(255,255,255,1);
+      border: 1px solid rgba(255,255,255,0.8);
+      font-weight: 750;
+    }
+
+    .nav-button .number {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      color: var(--blue);
+      background: var(--cyan);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .nav-button.phase-day18 .number {
+      color: #9c451d;
+      background: #ffe1cf;
+    }
+
+    .nav-button.phase-day20 .number {
+      color: var(--blue);
+      background: var(--cyan);
+    }
+
+    .nav-button.phase-day18.active { box-shadow: inset 4px 0 0 var(--orange), 0 8px 22px rgba(23, 50, 77, .09); }
+    .nav-button.phase-day20.active { box-shadow: inset 4px 0 0 var(--blue), 0 8px 22px rgba(23, 50, 77, .09); }
+    .nav-button.phase-day18.active .number { color: #fff; background: var(--orange); }
+    .nav-button.phase-day20.active .number { color: #fff; background: var(--blue); }
+    .nav-button .label { font-size: 12px; line-height: 1.25; }
+
+    main {
+      min-width: 0;
+      padding: clamp(26px, 4vw, 58px);
+    }
+
+    .page { display: none; max-width: 1180px; margin: 0 auto; }
+    .page.active { display: block; animation: enter .22s ease; }
+    @keyframes enter { from { opacity: 0; transform: translateY(5px); } }
+
+    .page::before {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .page[data-phase="day18"]::before {
+      content: "PHẦN GỐC · DAY 18";
+      color: #9c451d;
+      background: #ffe1cf;
+      box-shadow: inset 0 0 0 1px #f6c6aa;
+    }
+
+    .page[data-phase="day20"]::before {
+      content: "PHẦN BỔ SUNG · DAY 20";
+      color: #1e5870;
+      background: var(--cyan);
+      box-shadow: inset 0 0 0 1px #bfe3e6;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: var(--blue);
+      background: var(--cyan);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, h4 { color: var(--navy); line-height: 1.2; }
+    h1 {
+      max-width: 850px;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(38px, 6vw, 72px);
+      font-weight: 500;
+      letter-spacing: -.025em;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(30px, 4vw, 48px);
+      font-weight: 500;
+      letter-spacing: -.02em;
+    }
+
+    h3 { margin: 0 0 10px; font-size: 18px; }
+    h4 { margin: 0 0 7px; font-size: 14px; }
+
+    .lead {
+      max-width: 860px;
+      margin: 14px 0 26px;
+      color: var(--muted);
+      font-size: clamp(16px, 2vw, 19px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .hero-copy {
+      padding: clamp(26px, 4vw, 48px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,1);
+    }
+
+    .hero-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px;
+      overflow: hidden;
+      border-radius: 30px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--navy), #1e293b);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.1), var(--shadow-lg);
+    }
+
+    .hero-side h3 { color: #fff; font-size: 22px; }
+    .hero-side p { color: #cbd9e3; }
+    .hero-stat {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .hero-stat div {
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 15px;
+      background: rgba(255,255,255,.07);
+    }
+
+    .hero-stat b { display: block; color: #ffc395; font-size: 22px; }
+    .hero-stat small { color: #cbd9e3; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 22px;
+      margin-bottom: 26px;
+    }
+
+    .section-head .copy { max-width: 820px; }
+    .section-head p { margin: 10px 0 0; color: var(--muted); }
+
+    .grid { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-main { grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); }
+
+    .card {
+      padding: 21px;
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,1);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,1);
+    }
+
+    .card.tint-blue { background: #f1f8fa; }
+    .card.tint-orange { background: var(--orange-soft); }
+    .card.tint-green { background: var(--green-soft); }
+    .card.tint-yellow { background: var(--yellow-soft); }
+    .card.tint-purple { background: var(--purple-soft); }
+    .card.dark { color: #eaf1f6; border-color: var(--navy); background: var(--navy); }
+    .card.dark h3, .card.dark h4 { color: #fff; }
+    .card.dark .muted { color: #bfd0dc; }
+
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    .card-number {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 15px;
+      border-radius: 11px;
+      color: #fff;
+      background: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      min-height: 160px;
+      justify-content: space-between;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--navy);
+      font-family: var(--font-display);
+      font-size: clamp(27px, 3vw, 40px);
+      line-height: 1;
+    }
+
+    .metric small { color: var(--muted); }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; }
+
+    .tag, .status, .event-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      width: fit-content;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .tag { color: var(--blue); background: var(--cyan); }
+    .tag.orange { color: #9c451d; background: #ffe1cf; }
+    .tag.green { color: #176540; background: #d8f1e3; }
+    .tag.yellow { color: #895f0c; background: #fcedae; }
+    .tag.red { color: #9d3131; background: #f8dada; }
+    .tag.purple { color: #5e4387; background: #e7dcf7; }
+    .status.keep { color: #176540; background: #d8f1e3; }
+    .status.remove { color: #9d3131; background: #f8dada; }
+    .status.delay { color: #5e4387; background: #e7dcf7; }
+    .status.simplify { color: #895f0c; background: #fcedae; }
+    .event-chip {
+      color: #38536b;
+      background: #e8edf1;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .callout {
+      margin: 20px 0;
+      padding: 18px 20px;
+      border-left: 4px solid var(--orange);
+      border-radius: 0 14px 14px 0;
+      background: var(--orange-soft);
+    }
+
+    .callout strong { color: var(--navy); }
+    .quote {
+      margin: 0;
+      color: var(--navy);
+      font-family: var(--font-display);
+      font-size: 24px;
+      line-height: 1.35;
+    }
+
+    ul.clean {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    ul.clean li {
+      position: relative;
+      padding-left: 19px;
+    }
+
+    ul.clean li::before {
+      content: "";
+      position: absolute;
+      top: .66em;
+      left: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .table-wrap {
+      margin: 18px 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    th, td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #ebe7df;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #53606d;
+      background: #f5f3ed;
+      font-size: 10px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    td b { color: var(--navy); }
+
+    .flow {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+      overflow-x: auto;
+      padding: 5px 2px 14px;
+    }
+
+    .flow-step {
+      flex: 1 0 145px;
+      min-height: 112px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .flow-step b { display: block; margin: 7px 0 4px; color: var(--navy); font-size: 13px; }
+    .flow-step small { display: block; color: var(--muted); }
+    .flow-arrow { align-self: center; color: var(--orange); font-size: 20px; font-weight: 900; }
+
+    .agency {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .agency > div {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .agency .act { border-top: 5px solid var(--green); }
+    .agency .ask { border-top: 5px solid var(--yellow); }
+    .agency .dont { border-top: 5px solid var(--red); }
+
+    .journey {
+      position: relative;
+      display: grid;
+      gap: 0;
+      margin: 15px 0;
+    }
+
+    .journey-row {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      padding: 0 0 20px;
+    }
+
+    .journey-row:last-child { padding-bottom: 0; }
+    .journey-dot {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .journey-row:not(:last-child) .journey-dot::after {
+      content: "";
+      position: absolute;
+      top: 35px;
+      left: 16px;
+      width: 2px;
+      height: calc(100% + 20px);
+      background: var(--line);
+    }
+
+    .journey-row h4 { margin-top: 3px; }
+    .journey-row p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+
+    .phone {
+      width: min(100%, 430px);
+      margin: 0 auto;
+      padding: 12px;
+      border: 1px solid #0c1f31;
+      border-radius: 32px;
+      background: #102438;
+      box-shadow: 0 26px 60px rgba(23, 50, 77, .22);
+    }
+
+    .phone-inner {
+      min-height: 630px;
+      overflow: hidden;
+      border-radius: 23px;
+      background: #fbfaf5;
+    }
+
+    .phone-top {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 18px 9px;
+      color: #64717d;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .phone-body { padding: 18px; }
+    .phone-body h3 { font-size: 25px; letter-spacing: -.03em; }
+    .phone-body .micro { color: var(--muted); font-size: 11px; }
+    .prototype-screen { display: none; }
+    .prototype-screen.active { display: block; animation: enter .18s ease; }
+
+    .progress-line {
+      height: 5px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e7e3da;
+    }
+
+    .progress-line div {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--orange), #f6ad65);
+      transition: width .25s ease;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 42px;
+      padding: 9px 14px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 12px;
+      transition: .16s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:focus-visible, .nav-button:focus-visible {
+      outline: 3px solid rgba(242,122,63,.35);
+      outline-offset: 2px;
+    }
+
+    .btn-primary { color: #fff; background: var(--orange); }
+    .btn-secondary { color: var(--navy); border-color: var(--line); background: #fff; }
+    .btn-soft { color: var(--blue); background: var(--cyan); }
+    .btn-danger { color: var(--red); border-color: #efcaca; background: var(--red-soft); }
+    .btn-block { width: 100%; margin-top: 9px; }
+
+    .choice {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin: 9px 0;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--ink);
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .choice:hover { border-color: #b9cbd4; background: #f5fbfc; }
+    .choice .icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--cyan);
+    }
+
+    .choice b, .choice small { display: block; }
+    .choice small { color: var(--muted); font-size: 10px; }
+
+    .evidence {
+      margin: 13px 0;
+      padding: 13px;
+      border: 1px dashed #aab8c0;
+      border-radius: 13px;
+      color: #475663;
+      background: #f0f4f5;
+      font-size: 11px;
+    }
+
+    .form-group { margin: 10px 0; }
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+      color: #55616b;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid #d8d4ca;
+      border-radius: 10px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    .success-panel {
+      padding: 18px;
+      border: 1px solid #b6dfca;
+      border-radius: 17px;
+      background: var(--green-soft);
+    }
+
+    .success-icon {
+      display: grid;
+      place-items: center;
+      width: 47px;
+      height: 47px;
+      margin-bottom: 12px;
+      border-radius: 15px;
+      color: #fff;
+      background: var(--green);
+      font-size: 22px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 10px;
+      margin: 10px 0;
+      padding: 11px;
+      border-radius: 13px;
+      background: #fff;
+    }
+
+    .timeline-item time { color: var(--orange); font-size: 11px; font-weight: 900; }
+    .timeline-item b { display: block; font-size: 12px; }
+    .timeline-item small { color: var(--muted); font-size: 10px; }
+
+    .event-log {
+      max-height: 510px;
+      overflow: auto;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      color: #d9e7ef;
+      background: #132b40;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .event-log div {
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,.09);
+    }
+
+    .event-log div:last-child { border: 0; }
+    .event-log b { color: #ffb980; }
+    .event-log span { color: #92abba; }
+
+    .ladder {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .ladder > div {
+      position: relative;
+      min-height: 145px;
+      padding: 16px;
+      border-radius: 17px;
+      color: #fff;
+      background: var(--navy);
+    }
+
+    .ladder > div:nth-child(2) { background: #214a66; }
+    .ladder > div:nth-child(3) { background: var(--blue); }
+    .ladder > div:nth-child(4) { background: var(--green); }
+    .ladder > div:nth-child(5) { background: var(--purple); }
+    .ladder > div:nth-child(6) { color: var(--navy); background: #f3ba54; }
+    .ladder b { display: block; margin: 8px 0; font-size: 13px; }
+    .ladder small { display: block; opacity: .83; }
+
+    .north-star {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 270px;
+      padding: 28px;
+      overflow: hidden;
+      border-radius: 28px;
+      color: #fff;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(255,255,255,.22), transparent 40%),
+        var(--navy);
+    }
+
+    .north-star::before {
+      content: "★";
+      position: absolute;
+      right: -15px;
+      bottom: -72px;
+      color: rgba(255,255,255,.06);
+      font-size: 260px;
+      line-height: 1;
+    }
+
+    .north-star h3 {
+      max-width: 720px;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: clamp(26px, 4vw, 45px);
+      font-weight: 500;
+    }
+
+    .north-star p { max-width: 720px; color: #cbd9e3; }
+
+    .hook {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .hook > div {
+      position: relative;
+      min-height: 210px;
+      padding: 19px;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: #fff;
+    }
+
+    .hook > div:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      right: -18px;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--orange);
+      transform: translateY(-50%);
+      font-weight: 900;
+    }
+
+    .hook .hook-index {
+      color: var(--orange);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .acceptance {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .acceptance div {
+      position: relative;
+      padding: 13px 13px 13px 38px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+      font-size: 12px;
+    }
+
+    .acceptance div::before {
+      content: "✓";
+      position: absolute;
+      top: 12px;
+      left: 13px;
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .demo-row {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 18px;
+      padding: 17px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .demo-row:last-child { border: 0; }
+    .demo-row time { color: var(--orange); font-weight: 900; }
+    .demo-row b { display: block; color: var(--navy); }
+
+    .footer-note {
+      margin-top: 28px;
+      padding: 17px 20px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      color: var(--muted);
+      background: rgba(255,255,255,.75);
+      font-size: 12px;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Canvas Box Styles from index_2.html */
+    .canvas-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .canvas-box h4 {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 15px;
+    }
+
+    .canvas-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px;
+      margin-bottom: 10px;
+      align-items: start;
+    }
+
+    .canvas-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .canvas-value {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .rationale {
+      background: linear-gradient(180deg, #121c1a, #131820);
+      border: 1px solid #1a4040;
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #dfe3ee;
+    }
+
+    .rationale h4 {
+      margin: 0 0 8px;
+      color: var(--orange);
+      font-size: 13px;
+    }
+
+    .rationale ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .rationale li {
+      margin-bottom: 6px;
+    }
+
+    .rationale b {
+      color: var(--orange);
+    }
+
+    .highlight {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .highlight-bad {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    .flowmap {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .flowmap .node {
+      background: var(--panel2);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      text-align: center;
+      background: var(--surface);
+      border-color: var(--line);
+    }
+
+    .flowmap .arrow {
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .comparison-col {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .comparison-col h5 {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 13px;
+    }
+
+    .comparison-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .comparison-row:last-child {
+      border-bottom: none;
+    }
+
+    .comparison-row span:first-child {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .comparison-row span:last-child {
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Phone Demo Styles from index_2.html */
+    .phone-demo-section {
+      margin: 30px 0;
+      padding: 30px;
+      background: linear-gradient(180deg, rgba(26, 32, 48, .3), rgba(19, 24, 32, .3));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .phone-demo-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .phone-demo-header h3 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 18px;
+    }
+
+    .phone-demo-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .phone-demo-container {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .phone-frame {
+      background: #0a0e14;
+      border: 4px solid #2a3a50;
+      border-radius: 40px;
+      padding: 14px;
+      width: 340px;
+      height: 680px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+      flex-shrink: 0;
+    }
+
+    .phone-screen {
+      background: linear-gradient(180deg, #1a2030, #131820);
+      border-radius: 28px;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 28px;
+      background: #000;
+      border-radius: 16px;
+      z-index: 10;
+    }
+
+    .screen-container {
+      padding: 50px 20px 20px;
+      height: 100%;
+      position: relative;
+    }
+
+    .app-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 50px 20px 20px;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all .4s cubic-bezier(.4, 0, .2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-screen.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .app-screen.prev {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+
+    .splash-screen {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .app-logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--orange), #f6ad65);
+      border-radius: 20px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .app-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .app-tagline {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+
+    .value-prop-screen {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .value-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .value-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .value-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .input-screen {
+      padding: 50px 20px 20px;
+    }
+
+    .input-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .input-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .input-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .input-field {
+      background: var(--surface);
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .input-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .input-value {
+      font-size: 16px;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .report-screen {
+      padding: 50px 16px 16px;
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .report-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .report-date {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .summary-card {
+      background: linear-gradient(135deg, var(--surface), var(--soft));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .summary-amount {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .category-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .category-item {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .category-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(41, 107, 135, .1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .category-info {
+      flex: 1;
+    }
+
+    .category-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .category-amount {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .category-bar {
+      width: 60px;
+      height: 4px;
+      background: var(--soft);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .category-bar-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 2px;
+    }
+
+    .insight-screen {
+      padding: 50px 20px 20px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .insight-card {
+      background: linear-gradient(135deg, rgba(41, 107, 135, .1), rgba(39, 133, 91, .1));
+      border: 2px solid var(--blue);
+      border-radius: 20px;
+      padding: 32px 24px;
+      margin-bottom: 20px;
+    }
+
+    .insight-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .insight-text {
+      font-size: 16px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .insight-highlight {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .aha-screen {
+      padding: 50px 20px 20px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .aha-bulb {
+      font-size: 64px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: .8; }
+    }
+
+    .aha-text {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .aha-sub {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .setup-screen {
+      padding: 50px 20px 20px;
+    }
+
+    .setup-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .setup-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .setup-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .setup-option {
+      background: var(--surface);
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .setup-option:hover {
+      border-color: var(--blue);
+    }
+
+    .setup-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(41, 107, 135, .1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .setup-info {
+      flex: 1;
+    }
+
+    .setup-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .setup-desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .setup-badge {
+      background: rgba(242, 122, 63, .1);
+      color: var(--orange);
+      border: 1px solid var(--orange);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .habit-screen {
+      padding: 50px 20px 20px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .habit-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .habit-day {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .habit-day.empty {
+      background: var(--soft);
+      color: var(--muted);
+    }
+
+    .habit-day.active {
+      background: var(--blue);
+      color: #0b1a18;
+    }
+
+    .habit-day.today {
+      background: var(--green);
+      color: #0b1a18;
+      box-shadow: 0 0 12px rgba(39, 133, 91, .4);
+    }
+
+    .habit-streak {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .habit-label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .nav-dots {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--line);
+      transition: all .3s;
+    }
+
+    .nav-dot.active {
+      background: var(--blue);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    .timer-display {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--surface);
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+
+    .event-badge {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      background: rgba(41, 107, 135, .1);
+      color: var(--blue);
+      border: 1px solid var(--blue);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .phone-demo-info {
+      flex: 1;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .phone-demo-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .control-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .btn-prev {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .btn-next {
+      background: var(--blue);
+      color: #0b1a18;
+    }
+
+    .btn-reset {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .step-indicator {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .step-badge {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .step-badge:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .step-badge.active {
+      background: var(--blue);
+      color: #0b1a18;
+      border-color: var(--blue);
+    }
+
+    .demo-metric-display {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .demo-metric-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .demo-metric-label {
+      color: var(--muted);
+    }
+
+    .demo-metric-value {
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    .demo-progress-bar {
+      height: 6px;
+      background: var(--soft);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .demo-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      transition: width .5s ease;
+    }
+
+    @media (max-width: 1080px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar {
+        position: sticky;
+        top: 69px;
+        z-index: 40;
+        display: flex;
+        height: auto;
+        gap: 6px;
+        padding: 10px 14px;
+        overflow-x: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,253,248,.96);
+        backdrop-filter: blur(12px);
+      }
+      .nav-label { display: none; }
+      .nav-button {
+        flex: 0 0 auto;
+        width: auto;
+        grid-template-columns: 27px auto;
+        margin: 0;
+      }
+      .nav-button .label { white-space: nowrap; }
+      .hero { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 820px) {
+      .grid-2, .grid-3, .grid-4, .grid-main, .agency, .acceptance { grid-template-columns: 1fr; }
+      .hook { grid-template-columns: 1fr 1fr; }
+      .hook > div:nth-child(2)::after { display: none; }
+      .section-head { align-items: start; flex-direction: column; }
+      .top-meta { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      main { padding: 24px 16px 50px; }
+      .topbar { padding: 12px 15px; }
+      .brand small { display: none; }
+      .hook { grid-template-columns: 1fr; }
+      .hook > div::after { display: none !important; }
+      .journey-row { grid-template-columns: 38px minmax(0, 1fr); }
+      .journey-row > .status { grid-column: 2; }
+      .hero-copy, .hero-side { padding: 24px; border-radius: 23px; }
+      .phone { padding: 8px; border-radius: 26px; }
+      .phone-inner { min-height: 600px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">B</div>
+      <div>
+        <strong>BudgetBuddy AI</strong>
+        <small>Retention, Engagement & Habit Loop · Day 20</small>
+      </div>
+    </div>
+    <div class="top-meta">
+      <span>Track 1 · AI Personal Assistant</span>
+      <span>Day 20</span>
+      <span>Sinh viên: Vũ Hải Dương — MSSV: 2A202600632</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar" aria-label="Điều hướng bài lab"></aside>
+
+    <main>
+      <!-- 00 PROTOTYPE DAY 18 -->
+      <section class="page active" id="page-00" data-phase="day18">
+        <div class="hero">
+          <div class="hero-copy">
+            <span class="eyebrow">00 · Prototype Ngày 18 / Current State</span>
+            <h1>Tôi không biết tiền mình đi đâu, cuối tháng luôn thiếu và phải vay mượn.</h1>
+            <p class="lead">BudgetBuddy AI phát hiện khoản chi từ SMS ngân hàng, phân loại tự động, giúp sinh viên kiểm soát ngân sách hàng ngày và tránh stress tài chính.</p>
+            <div class="callout">
+              <strong>Lát cắt sản phẩm:</strong> từ một khoản chi trong SMS đến một insight về pattern chi tiêu và kế hoạch điều chỉnh.
+            </div>
+          </div>
+          <div class="hero-side">
+            <div>
+              <span class="tag orange">Day 18 baseline</span>
+              <h3>Agency trước automation</h3>
+              <p>AI được phép gợi ý và làm các hành động rủi ro thấp; các hành động ảnh hưởng quyền riêng tư hoặc người khác luôn cần người dùng xác nhận.</p>
+            </div>
+            <div class="hero-stat">
+              <div><b>9</b><small>scenario Day 18</small></div>
+              <div><b>1</b><small>recovery loop đầy đủ</small></div>
+              <div><b>3</b><small>ranh giới agency</small></div>
+              <div><b>72%</b><small>ví dụ confidence</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-bottom:28px">
+          <div class="card tint-orange">
+            <span class="tag orange">Day 18 · Nội dung gốc</span>
+            <h3 style="margin-top:12px">Prototype Human-Centered AI</h3>
+            <p class="small muted">Bao gồm sản phẩm BudgetBuddy, persona/scenario ban đầu, ranh giới Act–Ask–Don't Act, explainability, feedback và recovery S6/S8.</p>
+          </div>
+          <div class="card tint-blue">
+            <span class="tag">Day 20 · Nội dung bổ sung</span>
+            <h3 style="margin-top:12px">Retention, Engagement & Habit Loop</h3>
+            <p class="small muted">Các tab 01–12 dùng prototype Day 18 làm đầu vào để bổ sung core action, retention metric, onboarding tối ưu, North Star, Hook Model và tracking.</p>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div class="copy">
+            <h2>Vòng đời Day 18 được giữ lại</h2>
+            <p>Phần Day 20 tiếp tục trực tiếp từ flow này, không đổi persona hoặc tạo sản phẩm mới.</p>
+          </div>
+        </div>
+
+        <div class="flow" aria-label="Vòng đời BudgetBuddy AI">
+          <div class="flow-step"><span class="tag">S0</span><b>Onboarding</b><small>Đặt kỳ vọng, xin quyền đúng lúc, cho phép bỏ qua.</small></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="tag">S1 · S4</span><b>Kết nối & phát hiện</b><small>Đọc SMS ngân hàng được cấp quyền, trích chi tiêu kèm evidence.</small></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="tag">S2 · S3</span><b>Phân loại & lập kế hoạch</b><small>Giải thích phân loại và cho người dùng điều chỉnh.</small></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="tag">S5 · S9</span><b>Agency</b><small>Nhắc nhẹ chi tiêu, hỏi trước khi gửi tin nhắn, không tự gửi.</small></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="tag">S6 · S8</span><b>Feedback & Recovery</b><small>Sửa đúng nguyên nhân, xác nhận lại, cập nhật và tiếp tục.</small></div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Scenario map</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Mã</th><th>Scenario</th><th>Năng lực</th></tr></thead>
+                <tbody>
+                  <tr><td>S0</td><td>First-time onboarding</td><td>Kỳ vọng và kiểm soát</td></tr>
+                  <tr><td>S1</td><td>Kết nối SMS ngân hàng</td><td>Permission và privacy</td></tr>
+                  <tr><td>S2</td><td>Phân loại nhiều khoản chi</td><td>Explainability</td></tr>
+                  <tr><td>S4</td><td>Tạo khoản chi từ SMS</td><td>Evidence + confidence</td></tr>
+                  <tr><td>S3</td><td>Đề xuất ngân sách tuần tới</td><td>Bổ sung bối cảnh</td></tr>
+                  <tr><td>S5</td><td>AI chủ động cảnh báo chi tiêu</td><td>Act / Ask / Don't Act</td></tr>
+                  <tr><td>S9</td><td>Soạn tin nhắn chia tiền</td><td>Draft → review → send</td></tr>
+                  <tr><td>S6</td><td>AI phân loại nhầm khoản chi</td><td>Recovery loop</td></tr>
+                  <tr><td>S8</td><td>Nhắc khoản đã thanh toán</td><td>State correction</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card tint-yellow">
+            <h3>Ranh giới agency</h3>
+            <div class="agency">
+              <div class="act">
+                <span class="tag green">Act</span>
+                <h4>AI có thể làm</h4>
+                <p class="small muted">Hiển thị nhắc nhẹ cho chi tiêu đã xác nhận, dễ bỏ qua và hoàn tác.</p>
+              </div>
+              <div class="ask">
+                <span class="tag yellow">Ask</span>
+                <h4>AI phải hỏi</h4>
+                <p class="small muted">Thêm khoản chi, kết nối SMS, hoặc sửa thông tin tài chính.</p>
+              </div>
+              <div class="dont">
+                <span class="tag red">Don't Act</span>
+                <h4>AI không tự làm</h4>
+                <p class="small muted">Gửi tin nhắn, hủy lịch của người khác hoặc tự chuyển tiền.</p>
+              </div>
+            </div>
+            <div class="callout">
+              <strong>Recovery Day 18:</strong> S6 được giữ và cải thiện trong phần 06; người dùng luôn thấy AI đã sửa gì và khoản nào liên quan cần rà soát.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 01 CUSTOMER RETENTION CANVAS -->
+      <section class="page" id="page-01" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">01 · Customer Retention Canvas</span>
+            <h2>Một use case, một nhịp hành vi rõ ràng</h2>
+            <p>Phân tích tập trung vào việc quản lý chi tiêu sinh viên — không mở rộng sang toàn bộ đời sống tài chính.</p>
+          </div>
+        </div>
+
+        <div class="card tint-orange">
+          <span class="tag orange">The Problem · bằng lời của user</span>
+          <p class="quote">"Tôi không biết tiền mình đi đâu, cuối tháng luôn thiếu và phải vay mượn. SMS ngân hàng quá nhiều để đọc thủ công."</p>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:18px">
+          <div class="card">
+            <div class="card-number">01</div>
+            <h3>The Persona</h3>
+            <p><b>Sinh viên đại học (18-22 tuổi)</b>, sống độc lập, nhận tiền hỗ trợ từ gia đình hàng tháng hoặc làm thêm.</p>
+            <ul class="clean small muted">
+              <li>Mục tiêu: kiểm soát chi tiêu để không thiếu tiền cuối tháng.</li>
+              <li>Kinh nghiệm quản lý tài chính ở mức trung bình.</li>
+              <li>Hành vi thay đổi mạnh đầu tháng (vừa nhận tiền) và cuối tháng (gần hết tiền).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-number">02</div>
+            <h3>Anti-persona</h3>
+            <p>Người đã có hệ thống quản lý tài chính (Excel, app chuyên nghiệp) hoặc có thu nhập cao không cần kiểm soát chi tiết.</p>
+            <p class="small muted">Không trộn dữ liệu của người có thu nhập cao vào cohort chính.</p>
+          </div>
+          <div class="card">
+            <div class="card-number">03</div>
+            <h3>The Why</h3>
+            <p>Muốn giảm stress tài chính, tránh phải vay mượn, và cảm thấy tự chủ hơn về cuộc sống sinh viên.</p>
+            <p class="small muted">Outcome mong muốn: kiểm soát được chi tiêu và có thể tiết kiệm cho các mục tiêu ngắn hạn.</p>
+          </div>
+          <div class="card">
+            <div class="card-number">04</div>
+            <h3>The Alternative</h3>
+            <ul class="clean small">
+              <li>Đọc SMS ngân hàng thủ công khi nhớ.</li>
+              <li>Ghi chép vào sổ tay hoặc Excel (thường bỏ dở).</li>
+              <li>Chấp nhận không biết chi tiêu chi tiết.</li>
+              <li>Hỏi bạn bè hoặc gia đình khi thiếu tiền.</li>
+            </ul>
+          </div>
+          <div class="card tint-blue">
+            <div class="card-number">05</div>
+            <h3>The Frequency</h3>
+            <p><b>Daily là cadence chính</b>, với nhiều điểm chạm trong ngày.</p>
+            <ul class="clean small muted">
+              <li>Giao dịch mới: nhiều lần/ngày (ăn, đi lại, giải trí).</li>
+              <li>Kiểm tra ngân sách: near daily hoặc every few days.</li>
+              <li>Tăng mạnh cuối tháng; giảm đầu tháng.</li>
+            </ul>
+          </div>
+          <div class="card dark">
+            <div class="card-number" style="background:var(--orange)">KQ</div>
+            <h3>Kết luận canvas</h3>
+            <p>Use case có natural frequency đủ cao để đo retention theo ngày, phù hợp với hành vi chi tiêu hàng ngày của sinh viên.</p>
+            <span class="tag orange">Daily, seasonally variable</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 CORE ACTION & ACTIVE USER -->
+      <section class="page" id="page-02" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">02 · Core Action & Active User</span>
+            <h2>Đếm hành vi tạo value, không đếm lượt mở app</h2>
+            <p>Core action phải cho thấy user đã nhận được insight về chi tiêu từ dữ liệu đã phân loại.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="card metric tint-blue">
+            <span class="tag">Core job</span>
+            <div>
+              <strong>Hiểu được tiền đang đi đâu</strong>
+              <p class="small muted">Gom chi tiêu, phân loại và biến chúng thành báo cáo có thể hiểu.</p>
+            </div>
+          </div>
+          <div class="card metric tint-orange">
+            <span class="tag orange">Core action</span>
+            <div>
+              <strong>Xem báo cáo chi tiêu</strong>
+              <p class="small muted">User nhìn thấy tổng quan các khoản chi theo danh mục và so sánh với ngân sách.</p>
+            </div>
+          </div>
+          <div class="card metric tint-green">
+            <span class="tag green">Active user</span>
+            <div>
+              <strong>≥ 1 lần / ngày</strong>
+              <p class="small muted">Không tính user chỉ đăng nhập, mở app hoặc xem dashboard.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-main" style="margin-top:18px">
+          <div class="card">
+            <h3>Điều kiện ghi nhận core action</h3>
+            <div class="journey">
+              <div class="journey-row">
+                <div class="journey-dot">1</div>
+                <div><h4>Có ít nhất 1 khoản chi được phân loại</h4><p>Tự động từ SMS hoặc thủ công.</p></div>
+                <span class="event-chip">expense_ready</span>
+              </div>
+              <div class="journey-row">
+                <div class="journey-dot">2</div>
+                <div><h4>User mở màn hình báo cáo</h4><p>Xem tổng quan chi tiêu theo danh mục.</p></div>
+                <span class="event-chip">report_viewed</span>
+              </div>
+              <div class="journey-row">
+                <div class="journey-dot">3</div>
+                <div><h4>User nhận được insight</h4><p>Thấy pattern chi tiêu hoặc so sánh với ngân sách.</p></div>
+                <span class="event-chip">insight_received</span>
+              </div>
+            </div>
+          </div>
+          <div class="card dark">
+            <span class="tag orange">Định nghĩa chính thức</span>
+            <h3 style="margin-top:14px">Một user được tính là active khi…</h3>
+            <p class="quote" style="color:#fff;font-size:23px">…xem báo cáo chi tiêu ít nhất 1 lần trong ngày.</p>
+            <p class="small muted">Nếu cùng một báo cáo được xem lại nhiều lần trong ngày, không tạo thêm core action.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 NATURAL FREQUENCY & RETENTION METRIC -->
+      <section class="page" id="page-03" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">03 · Natural Frequency & Retention Metric</span>
+            <h2>Đo theo ngày, vì nhu cầu phát sinh hàng ngày</h2>
+            <p>Daily cadence phản ánh đúng nhịp giao dịch và nhu cầu kiểm tra ngân sách của sinh viên.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-4">
+          <div class="card metric"><span class="tag">Persona</span><div><strong>Sinh viên</strong><small>18-22 tuổi, thu nhập cố định.</small></div></div>
+          <div class="card metric"><span class="tag yellow">Cadence</span><div><strong>Daily</strong><small>Nhiều giao dịch/ngày.</small></div></div>
+          <div class="card metric"><span class="tag orange">Core action</span><div><strong>Xem báo cáo</strong><small>Nhận insight chi tiêu.</small></div></div>
+          <div class="card metric tint-purple"><span class="tag purple">Retention</span><div><strong>D1 / D7 / D30</strong><small>Daily cohort retention.</small></div></div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3>Metric chính: Daily Retention</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Thành phần</th><th>Định nghĩa</th></tr></thead>
+              <tbody>
+                <tr><td><b>Cohort</b></td><td>User đạt activation lần đầu trong cùng một ngày.</td></tr>
+                <tr><td><b>D1 Retention</b></td><td>% cohort xem báo cáo ≥1 lần vào ngày hôm sau.</td></tr>
+                <tr><td><b>D7 Retention</b></td><td>% cohort xem báo cáo ≥1 lần trong ngày thứ 7 sau activation.</td></tr>
+                <tr><td><b>D30 Retention</b></td><td>% cohort xem báo cáo ≥1 lần trong ngày thứ 30 sau activation.</td></tr>
+                <tr><td><b>Segment chính</b></td><td>Persona sinh viên, tách đầu tháng và cuối tháng.</td></tr>
+                <tr><td><b>Không dùng làm metric chính</b></td><td>WAU và MAU vì natural frequency là daily.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Lưu ý seasonality:</strong> báo cáo retention theo "đầu tháng" (vừa nhận tiền) và "cuối tháng" (gần hết tiền). Không kết luận churn chỉ vì user không xem báo cáo đầu tháng.
+        </div>
+      </section>
+
+      <!-- 04 ONBOARDING AUDIT -->
+      <section class="page" id="page-04" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">04 · Onboarding Audit (Current State)</span>
+            <h2>Current flow giải thích nhiều trước khi cho user thử</h2>
+            <p>Đây là audit từ prototype Day 18. Các con số là ước tính từ prototype vì chưa có dữ liệu production.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-main">
+          <div class="card">
+            <h3>Current-State Journey</h3>
+            <div class="journey">
+              <div class="journey-row"><div class="journey-dot">1</div><div><h4>Welcome + mô tả lợi ích</h4><p>User đọc product tour.</p></div><span class="status simplify">Simplify</span></div>
+              <div class="journey-row"><div class="journey-dot">2</div><div><h4>Giải thích AI không tự làm gì</h4><p>Quan trọng, nhưng quá sớm và dài.</p></div><span class="status delay">Delay</span></div>
+              <div class="journey-row"><div class="journey-dot">3</div><div><h4>Giải thích các nguồn dữ liệu</h4><p>Chưa có action thật.</p></div><span class="status delay">Delay</span></div>
+              <div class="journey-row"><div class="journey-dot">4</div><div><h4>Chọn kết nối SMS hoặc nhập tay</h4><p>CTA bị chia giữa hai lựa chọn.</p></div><span class="status simplify">Simplify</span></div>
+              <div class="journey-row"><div class="journey-dot">5</div><div><h4>Cấp permission</h4><p>Rủi ro drop-off trước khi thấy value.</p></div><span class="status delay">Delay</span></div>
+              <div class="journey-row"><div class="journey-dot">6</div><div><h4>Đi tới màn hình chính</h4><p>User phải tự tìm scenario tạo chi.</p></div><span class="status remove">Remove</span></div>
+              <div class="journey-row"><div class="journey-dot">7</div><div><h4>Xem chi AI phát hiện</h4><p>Lần đầu có evidence gần core value.</p></div><span class="status keep">Keep</span></div>
+              <div class="journey-row"><div class="journey-dot">8</div><div><h4>Xem báo cáo chi tiêu</h4><p>First core action.</p></div><span class="status keep">Keep</span></div>
+              <div class="journey-row"><div class="journey-dot">9</div><div><h4>Nhận insight đầu tiên</h4><p>Aha moment / first value.</p></div><span class="status keep">Keep</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="grid grid-2">
+              <div class="card metric tint-orange"><span class="tag orange">Steps</span><div><strong>9</strong><small>tới first value</small></div></div>
+              <div class="card metric tint-yellow"><span class="tag yellow">Fields</span><div><strong>0</strong><small>ước tính</small></div></div>
+              <div class="card metric tint-purple"><span class="tag purple">Permission</span><div><strong>1</strong><small>trước core action</small></div></div>
+              <div class="card metric tint-blue"><span class="tag">TTFC</span><div><strong>2'</strong><small>ước tính</small></div></div>
+            </div>
+            <div class="card tint-orange" style="margin-top:18px">
+              <h3>Drop-off có khả năng cao nhất</h3>
+              <p><b>Bước xin quyền SMS:</b> user chưa thấy một kết quả mẫu nên khó đánh giá lợi ích có đáng đổi lấy quyền truy cập hay không.</p>
+              <p class="small muted">Time to Value hiện tại: khoảng 2-3 phút, dài hơn TTFC vì user chỉ thấy value sau khi xem báo cáo.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Friction</th><th>Quan sát</th><th>Quyết định</th></tr></thead>
+            <tbody>
+              <tr><td>Product tour dài</td><td>Ba màn giải thích trước action thật.</td><td><span class="status simplify">Simplify</span> còn một value statement.</td></tr>
+              <tr><td>Permission sớm</td><td>User chưa có evidence of value.</td><td><span class="status delay">Delay</span> và cung cấp sample mode.</td></tr>
+              <tr><td>CTA phân tán</td><td>Kết nối, nhập tay có trọng lượng gần nhau.</td><td><span class="status simplify">Simplify</span> một CTA chính, hai đường recovery.</td></tr>
+              <tr><td>Không thấy tiến độ</td><td>User không biết còn bao lâu tới kết quả.</td><td><span class="status keep">Add</span> progress 1/3 → 3/3.</td></tr>
+              <tr><td>Recovery S6</td><td>Flow sửa sai đã tốt nhưng nằm xa onboarding.</td><td><span class="status keep">Keep</span> đưa edit ngay vào first result.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 05 REDESIGNED ONBOARDING -->
+      <section class="page" id="page-05" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">05 · Redesigned Onboarding → First Core Action</span>
+            <h2>Cho user chạm core value trong khoảng 45 giây</h2>
+            <p>Prototype bên dưới là flow mới có thể chạy thật: sample mode, permission đúng lúc, first core action, evidence of value và event log.</p>
+          </div>
+          <button class="btn btn-secondary" type="button" onclick="resetPrototype()">↻ Chạy lại prototype</button>
+        </div>
+
+        <div class="grid grid-main">
+          <div class="phone" aria-label="Prototype onboarding BudgetBuddy">
+            <div class="phone-inner">
+              <div class="phone-top"><span>9:41</span><span>BudgetBuddy · onboarding</span><span>●●●</span></div>
+              <div class="phone-body">
+                <div class="progress-line"><div id="prototypeProgress" style="width:20%"></div></div>
+
+                <div class="prototype-screen active" id="proto-welcome">
+                  <span class="tag orange">Bước 1/3 · khoảng 15 giây</span>
+                  <h3 style="margin-top:13px">Biết tiền đi đâu, không lo cuối tháng thiếu.</h3>
+                  <p class="muted">BudgetBuddy sẽ phân loại chi tiêu từ SMS và cho bạn xem báo cáo để điều chỉnh.</p>
+                  <div class="card tint-blue" style="padding:15px;margin:17px 0">
+                    <b>Trong lần thử này</b>
+                    <p class="small muted">Bạn sẽ nhập một khoản chi demo và xem báo cáo ngay. Không cần kết nối SMS.</p>
+                  </div>
+                  <button class="btn btn-primary btn-block" type="button" onclick="startPrototype()">Thử ngay →</button>
+                </div>
+
+                <div class="prototype-screen" id="proto-source">
+                  <span class="tag">Bước 2/3 · nhập demo</span>
+                  <h3 style="margin-top:13px">Nhập khoản chi đầu tiên</h3>
+                  <div class="form-group">
+                    <label for="expenseAmount">Số tiền</label>
+                    <input id="expenseAmount" value="50,000 ₫" placeholder="Ví dụ: 50,000 ₫">
+                  </div>
+                  <div class="form-group">
+                    <label for="expenseCategory">Danh mục</label>
+                    <select id="expenseCategory">
+                      <option>🍹 Trà sữa</option>
+                      <option>🍔 Ăn uống</option>
+                      <option>🚌 Đi lại</option>
+                      <option>🎮 Giải trí</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-primary btn-block" type="button" onclick="enterExpense()">Xem báo cáo →</button>
+                  <button class="btn btn-secondary btn-block" type="button" onclick="useSample()">Dùng dữ liệu mẫu</button>
+                </div>
+
+                <div class="prototype-screen" id="proto-permission">
+                  <span class="tag yellow">Permission · đúng thời điểm</span>
+                  <h3 style="margin-top:13px">Kết nối SMS để tự động?</h3>
+                  <div class="card" style="padding:14px">
+                    <h4>BudgetBuddy được đọc</h4>
+                    <p class="small muted">Nội dung SMS ngân hàng về giao dịch, số tiền và người nhận.</p>
+                    <h4>BudgetBuddy không đọc</h4>
+                    <p class="small muted">SMS cá nhân không liên quan; không gửi, xóa hoặc trả lời SMS.</p>
+                  </div>
+                  <button class="btn btn-primary btn-block" type="button" onclick="grantPermission()">Kết nối SMS</button>
+                  <button class="btn btn-secondary btn-block" type="button" onclick="denyPermission()">Bỏ qua, dùng sau</button>
+                  <p class="micro">Có thể rút quyền và xóa dữ liệu đã nhập bất cứ lúc nào.</p>
+                </div>
+
+                <div class="prototype-screen" id="proto-denied">
+                  <span class="tag red">Recovery · từ chối cấp quyền</span>
+                  <h3 style="margin-top:13px">Không sao — bạn vẫn có thể dùng.</h3>
+                  <p class="muted">Không có dữ liệu SMS nào được truy cập tự động. Bạn vẫn có thể cập nhật chi tiêu thủ công để quản lý tài chính.</p>
+                  <button class="btn btn-primary btn-block" type="button" onclick="goToHabit('denied')">Đi tới thói quen daily →</button>
+                </div>
+
+                <div class="prototype-screen" id="proto-report">
+                  <span class="tag orange">Bước 3/3 · xem báo cáo</span>
+                  <h3 style="margin-top:13px">Tổng quan chi tiêu hôm nay</h3>
+                  <div class="card tint-blue" style="padding:15px;margin:17px 0">
+                    <div style="font-size:32px;font-weight:700;color:var(--blue)" id="totalExpense">50,000 ₫</div>
+                    <p class="small muted">Tổng chi tiêu</p>
+                  </div>
+                  <div class="card" style="padding:14px;margin:12px 0">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div style="width:40px;height:40px;background:rgba(41,107,135,.1);border-radius:10px;display:grid;place-items:center;font-size:18px" id="categoryIcon">🍹</div>
+                      <div style="flex:1">
+                        <div style="font-weight:600;font-size:14px" id="categoryName">Trà sữa</div>
+                        <div style="color:var(--muted);font-size:12px" id="expenseAmountDisplay">50,000 ₫</div>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-block" type="button" onclick="showInsight()">Xem insight →</button>
+                </div>
+
+                <div class="prototype-screen" id="proto-value">
+                  <span class="tag green">Activation · first value</span>
+                  <div class="success-panel" style="margin-top:13px">
+                    <div class="success-icon">✓</div>
+                    <h3>Bạn đã chi 50,000 ₫ cho Trà sữa hôm nay.</h3>
+                    <p class="small muted">Đây là insight đầu tiên từ dữ liệu của bạn.</p>
+                  </div>
+                  <div class="card tint-yellow" style="padding:14px">
+                    <h4>Evidence of value</h4>
+                    <p class="small muted">BudgetBuddy đã phân loại khoản chi này và so sánh với ngân sách. Bạn có thể điều chỉnh danh mục nếu cần.</p>
+                  </div>
+                  <button class="btn btn-primary btn-block" type="button" onclick="goToSetup()">Thiết lập nâng cao →</button>
+                </div>
+
+                <div class="prototype-screen" id="proto-habit">
+                  <span class="tag green">Thói quen · habit loop</span>
+                  <h3 style="margin-top:13px">🔥 7 ngày liên tiếp</h3>
+                  <p class="muted">Bạn đã hoàn thành core action xem báo cáo hàng ngày!</p>
+                  <div class="card" style="padding:14px;margin:12px 0">
+                    <div style="display:flex;justify-content:space-around;gap:4px">
+                      <div style="width:30px;height:30px;border-radius:6px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700">T2</div>
+                      <div style="width:30px;height:30px;border-radius:6px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700">T3</div>
+                      <div style="width:30px;height:30px;border-radius:6px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700">T4</div>
+                      <div style="width:30px;height:30px;border-radius:6px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700">T5</div>
+                      <div style="width:30px;height:30px;border-radius:6px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700">T6</div>
+                      <div style="width:30px;height:30px;border-radius:6px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700">T7</div>
+                      <div style="width:30px;height:30px;border-radius:6px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;box-shadow:0 0 8px rgba(39, 133, 91, .6)">CN</div>
+                    </div>
+                  </div>
+                  <p class="micro"><b>Variable Reward:</b> Cảm giác tự chủ tài chính tăng lên mỗi khi bạn kiểm soát được ngân sách (The Self).</p>
+                  <button class="btn btn-secondary btn-block" type="button" onclick="resetPrototype()">Bắt đầu lại</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card dark">
+              <span class="tag orange">Live tracking preview</span>
+              <h3 style="margin-top:12px">Event log</h3>
+              <p class="small muted">Chỉ ghi khi hành vi thật xảy ra. Refresh giao diện không tạo event mới.</p>
+              <div class="event-log" id="eventLog" aria-live="polite">
+                <div><span>Chưa có event. Bấm "Thử ngay".</span></div>
+              </div>
+            </div>
+            <div class="card tint-green" style="margin-top:18px">
+              <h3>Mốc đo trong flow mới</h3>
+              <ul class="clean small">
+                <li><b>First core action:</b> <code>report_viewed</code>.</li>
+                <li><b>Activation:</b> insight đầu tiên hiển thị.</li>
+                <li><b>Aha moment:</b> user thấy pattern chi tiêu.</li>
+                <li><b>TTFC mục tiêu:</b> ≤ 30 giây với sample; ≤ 1 phút với nhập thủ công.</li>
+                <li><b>TTV mục tiêu:</b> ≤ 45 giây.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 BEFORE/AFTER COMPARISON -->
+      <section class="page" id="page-06" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">06 · Before / After & Recovery Path</span>
+            <h2>Ít bước hơn, nhưng không lấy mất quyền kiểm soát</h2>
+            <p>Flow mới giảm friction trước core action và đưa recovery vào ngay nơi AI có thể sai.</p>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tiêu chí</th><th>Before · Day 18</th><th>After · Day 20</th><th>Vì sao thay đổi</th></tr></thead>
+            <tbody>
+              <tr><td><b>Số bước tới core action</b></td><td>9 bước</td><td>3–4 bước</td><td>Bỏ product tour dài và dashboard trung gian.</td></tr>
+              <tr><td><b>Trường phải nhập</b></td><td>0</td><td>0 bắt buộc; chỉ nhập khi muốn</td><td>Sample mode không cần nhập.</td></tr>
+              <tr><td><b>Permission trước core action</b></td><td>1 quyền</td><td>0 với sample; 1 với SMS (sau value)</td><td>Cho user thấy value trước.</td></tr>
+              <tr><td><b>TTFC</b></td><td>2 phút</td><td>≤ 30 giây sample; ≤ 1 phút nhập</td><td>Input trực tiếp thay product tour.</td></tr>
+              <tr><td><b>Time to Value</b></td><td>2–3 phút</td><td>≤ 45 giây</td><td>Insight xuất hiện ngay sau báo cáo.</td></tr>
+              <tr><td><b>Drop-off chính</b></td><td>Permission sớm</td><td>Màn nhập chi</td><td>Rủi ro còn lại là user không muốn nhập.</td></tr>
+              <tr><td><b>Evidence of value</b></td><td>Nằm ở scenario riêng</td><td>Ngay sau core action</td><td>Liên kết trực tiếp action với outcome.</td></tr>
+              <tr><td><b>Recovery</b></td><td>Sửa sai sau khi đã vào app</td><td>Decline permission, no data và edit result đều quay lại journey</td><td>Không để recovery kết thúc ở màn lỗi.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid grid-main">
+          <div class="card">
+            <span class="tag red">S6 · Recovery được giữ lại</span>
+            <h3 style="margin-top:12px">AI phân loại nhầm khoản chi</h3>
+            <div id="recovery-stage-1">
+              <div class="evidence"><b>Khoản chi:</b> 50,000 ₫ · AI gán "Giải trí" · confidence 65%</div>
+              <p class="small muted">Bạn thấy kết quả này không đúng ở đâu?</p>
+              <button class="btn btn-secondary" type="button" onclick="chooseRecoveryReason('Sai danh mục')">Sai danh mục</button>
+              <button class="btn btn-secondary" type="button" onclick="chooseRecoveryReason('Sai số tiền')">Sai số tiền</button>
+              <button class="btn btn-secondary" type="button" onclick="chooseRecoveryReason('Không phải chi tiêu')">Không phải chi tiêu</button>
+            </div>
+            <div class="hidden" id="recovery-stage-2">
+              <p class="small"><b>Đã xác định nguyên nhân:</b> <span id="recoveryReason"></span>. Vui lòng chọn danh mục đúng.</p>
+              <div class="form-group">
+                <label for="correctCategory">Danh mục đúng</label>
+                <select id="correctCategory">
+                  <option>🍹 Trà sữa</option>
+                  <option>🍔 Ăn uống</option>
+                  <option>🚌 Đi lại</option>
+                  <option>🎮 Giải trí</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" type="button" onclick="applyRecovery()">Xác nhận sửa</button>
+            </div>
+            <div class="hidden success-panel" id="recovery-stage-3">
+              <div class="success-icon">✓</div>
+              <h3>Đã sửa khoản chi và cập nhật báo cáo.</h3>
+              <p class="small muted" id="recoveryResult"></p>
+              <button class="btn btn-secondary" type="button" onclick="reviewRelated()">Rà soát 2 khoản chi cùng ngày</button>
+              <p class="small muted hidden" id="relatedResult">Hai khoản chi liên quan được đưa vào danh sách review; hệ thống không tự sửa hàng loạt nếu chưa có xác nhận.</p>
+            </div>
+          </div>
+          <div class="card tint-blue">
+            <h3>Recovery path trong onboarding mới</h3>
+            <div class="journey">
+              <div class="journey-row"><div class="journey-dot">A</div><div><h4>Từ chối permission</h4><p>Chuyển sang sample/nhập tay, vẫn tới core action.</p></div><span class="tag green">Recovered</span></div>
+              <div class="journey-row"><div class="journey-dot">B</div><div><h4>Không có dữ liệu</h4><p>Cho dùng sample mode hoặc nhập chi; không trả màn hình trống.</p></div><span class="tag green">Recovered</span></div>
+              <div class="journey-row"><div class="journey-dot">C</div><div><h4>Kết quả đầu sai</h4><p>Edit inline, chọn loại lỗi, xác nhận lại.</p></div><span class="tag green">Recovered</span></div>
+              <div class="journey-row"><div class="journey-dot">D</div><div><h4>Chưa sẵn sàng kết nối</h4><p>Lưu báo cáo đã xem và hỏi lại ở lần mở kế tiếp.</p></div><span class="tag yellow">Resume</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 MEASUREMENT LADDER -->
+      <section class="page" id="page-07" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">07 · Measurement Ladder</span>
+            <h2>Mỗi tầng trả lời một câu hỏi khác nhau</h2>
+            <p>Chỉ giữ các metric có thể giúp team ra quyết định cho use case này.</p>
+          </div>
+        </div>
+
+        <div class="ladder">
+          <div><span>01</span><b>Qualified Visitor</b><small>Sinh viên thuộc persona bắt đầu onboarding.</small></div>
+          <div><span>02</span><b>Activation</b><small>Insight đầu tiên được hiển thị.</small></div>
+          <div><span>03</span><b>Core Action</b><small>Report views / user / day.</small></div>
+          <div><span>04</span><b>Retention</b><small>D1, D7, D30 retention theo core action.</small></div>
+          <div><span>05</span><b>Engagement</b><small>DAU/MAU, reports/DAU, reminder action rate.</small></div>
+          <div><span>06</span><b>Long-term Value</b><small>Tỷ lệ giảm chi tiêu vượt ngân sách; savings rate.</small></div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:18px">
+          <div class="card">
+            <span class="tag green">Activation</span>
+            <h3 style="margin-top:12px">Activation Rate</h3>
+            <p class="small"><b>Activated users / onboarding starters</b></p>
+            <p class="small muted">Đi kèm median Time to First Core Action và median Time to Value.</p>
+          </div>
+          <div class="card">
+            <span class="tag purple">Retention</span>
+            <h3 style="margin-top:12px">D1 / D7 / D30 Retention</h3>
+            <p class="small"><b>Retained active cohort / activated cohort</b></p>
+            <p class="small muted">Segment theo đầu tháng và cuối tháng.</p>
+          </div>
+          <div class="card">
+            <span class="tag yellow">Guardrail</span>
+            <h3 style="margin-top:12px">Notification Opt-out</h3>
+            <p class="small"><b>Users tắt nhắc / users nhận nhắc</b></p>
+            <p class="small muted">Bảo vệ user khỏi nurture quá dày.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Không ưu tiên:</strong> tổng lượt mở app, tổng khoản chi AI phát hiện hoặc session length đứng riêng lẻ — các chỉ số này có thể tăng mà user vẫn không nhận được insight nào.
+        </div>
+      </section>
+
+      <!-- 08 NORTH STAR & INPUT METRICS -->
+      <section class="page" id="page-08" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">08 · North Star & Input Metrics</span>
+            <h2>North Star phải phản ánh một ngày có tiến triển tài chính</h2>
+          </div>
+        </div>
+
+        <div class="north-star">
+          <div>
+            <span class="tag orange">North Star Metric</span>
+            <h3>Daily Users with a Financial Insight</h3>
+            <p>Số user mỗi ngày xem báo cáo chi tiêu ít nhất một lần và nhận được insight về pattern chi tiêu hoặc so sánh ngân sách.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:18px">
+          <div class="card tint-blue">
+            <span class="tag">Input 1 · Leading</span>
+            <h3 style="margin-top:12px">Activation Rate</h3>
+            <p class="small muted">Nhiều user đạt first value hơn sẽ mở rộng tập có khả năng quay lại.</p>
+          </div>
+          <div class="card tint-orange">
+            <span class="tag orange">Input 2 · Leading</span>
+            <h3 style="margin-top:12px">Time to Value</h3>
+            <p class="small muted">TTV càng ngắn, user càng thấy value sớm → càng quay lại.</p>
+          </div>
+          <div class="card tint-green">
+            <span class="tag green">Input 3 · Leading</span>
+            <h3 style="margin-top:12px">D7 Retention</h3>
+            <p class="small muted>User có quay lại sau 1 tuần không? Cho biết retention ngắn hạn.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px">
+          <div class="card">
+            <span class="tag purple">Lagging result</span>
+            <h3 style="margin-top:12px">Giảm tỷ lệ vượt ngân sách</h3>
+            <p>Customer value trung hạn là tỷ lệ ngày vượt ngân sách giảm và cảm giác kiểm soát tài chính tăng.</p>
+            <p class="small muted">Business result dài hạn: D30 retention và chuyển đổi gói premium tăng bền vững.</p>
+          </div>
+          <div class="card tint-yellow">
+            <span class="tag yellow">Trade-off cần theo dõi</span>
+            <h3 style="margin-top:12px">Nhắc nhiều có thể tăng progress ngắn hạn…</h3>
+            <p>…nhưng làm tăng notification opt-out, mất niềm tin và giảm D30 retention.</p>
+            <p class="small muted"><b>Guardrail:</b> opt-out rate, dismiss rate và số nhắc/user/ngày; không tối ưu NSM bằng spam.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09 NATURE VS NURTURE -->
+      <section class="page" id="page-09" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">09 · Nature vs Nurture</span>
+            <h2>Khuếch đại nhu cầu thật, không phát minh nhu cầu giả</h2>
+            <p>Nurture xuất hiện theo tín hiệu giao dịch và weekly planning — không ép streak hằng ngày.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card tint-blue">
+            <span class="tag">Nature</span>
+            <h3 style="margin-top:12px">Nhịp tự nhiên</h3>
+            <ul class="clean">
+              <li>Giao dịch mới: nhiều lần/ngày (ăn, đi lại, giải trí).</li>
+              <li>Nhu cầu "kiểm tra ngân sách": thường xuất hiện hằng ngày hoặc every few days.</li>
+              <li>Planning sâu: thường 1–2 lần/tuần.</li>
+              <li>Tăng mạnh cuối tháng; giảm đầu tháng.</li>
+            </ul>
+          </div>
+          <div class="card tint-orange">
+            <span class="tag orange">Nurture</span>
+            <h3 style="margin-top:12px">Tác động phù hợp</h3>
+            <ul class="clean">
+              <li>In-app prompt ngay khi có giao dịch mới chưa phân loại.</li>
+              <li>Weekly digest Chủ nhật hoặc thời gian user tự chọn.</li>
+              <li>Nhắc một lần khi gần hết ngân sách.</li>
+              <li>Không gửi nếu không có nội dung mới hoặc user đã xử lý.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nội dung</th><th>Quyết định của BudgetBuddy</th></tr></thead>
+            <tbody>
+              <tr><td><b>Natural frequency</b></td><td>Daily, nhiều điểm chạm trong ngày; có tính mùa vụ.</td></tr>
+              <tr><td><b>Internal trigger</b></td><td>Cảm giác "mình không biết còn bao nhiêu tiền" hoặc "sắp hết tháng rồi".</td></tr>
+              <tr><td><b>External trigger hiện có</b></td><td>SMS ngân hàng, notification app, tin nhắn bạn bè.</td></tr>
+              <tr><td><b>Nurture được chọn</b></td><td>Một weekly review có 3 khoản chi cần xác nhận; event-trigger chỉ khi có giao dịch mới.</td></tr>
+              <tr><td><b>Vì sao không quá dày/thưa</b></td><td>Khớp nhịp ngày; tối đa một digest/ngày và mặc định một digest/tuần, user tùy chỉnh.</td></tr>
+              <tr><td><b>Metric tác động</b></td><td>Digest → report view conversion, D7 retention; guardrail là opt-out/dismiss rate.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 10 HOOK MODEL -->
+      <section class="page" id="page-10" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">10 · Hook Review</span>
+            <h2>Một thói quen kiểm tra tài chính nhẹ, không phải nghiện mở app</h2>
+            <p>Habit được thiết kế quanh daily review và xử lý tín hiệu mới — có lợi cho user và đủ gần natural frequency.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Câu hành vi:</strong> Mỗi khi sinh viên cảm thấy không chắc về tài chính, họ sẽ mở BudgetBuddy và xem báo cáo chi tiêu.
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Hook Review</th><th>Quyết định của BudgetBuddy</th></tr></thead>
+            <tbody>
+              <tr><td><b>Why Habit?</b></td><td>Một nhịp review đều giúp user giảm stress tài chính và kiểm soát chi tiêu; business hưởng lợi từ value lặp lại.</td></tr>
+              <tr><td><b>Intended Behavior</b></td><td>Khi không chắc về tài chính, user xem báo cáo chi tiêu.</td></tr>
+              <tr><td><b>Frequency & Utility</b></td><td>Daily với nhiều tín hiệu trong ngày; đủ thường xuyên và có perceived utility cao vì gắn với sức khỏe tài chính.</td></tr>
+              <tr><td><b>Internal Trigger</b></td><td>Cảm giác không biết còn bao nhiêu tiền.</td></tr>
+              <tr><td><b>External Trigger</b></td><td>Weekly digest đúng giờ user chọn hoặc alert khi có giao dịch mới.</td></tr>
+              <tr><td><b>Action & Motivation</b></td><td>Mở app → xem báo cáo; động lực là giảm stress và kiểm soát tài chính.</td></tr>
+              <tr><td><b>Ability</b></td><td>TTV ngắn (≤45s), UI đơn giản, insight rõ ràng.</td></tr>
+              <tr><td><b>Variable Reward</b></td><td>The Self: cảm giác làm chủ tài chính và thấy tiến bộ.</td></tr>
+              <tr><td><b>Investment</b></td><td>Dữ liệu chi tiêu được nhập càng nhiều, báo cáo càng chính xác.</td></tr>
+              <tr><td><b>Next Trigger</b></td><td>Investment giúp hệ thống chuẩn bị digest ngày sau hoặc cảnh báo khi có giao dịch mới.</td></tr>
+              <tr><td><b>User Impact</b></td><td>Có lợi nếu user kiểm soát tần suất và dữ liệu; không dựa trên guilt, streak hoặc spam.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hook">
+          <div>
+            <span class="hook-index">01 · Trigger</span>
+            <h3>Không biết tiền / sắp hết tháng</h3>
+            <p class="small muted"><b>Internal:</b> lo không biết còn bao nhiêu tiền.</p>
+            <p class="small muted"><b>External:</b> digest hàng tuần hoặc alert khi có giao dịch mới.</p>
+          </div>
+          <div>
+            <span class="hook-index">02 · Action</span>
+            <h3>Mở và xem báo cáo</h3>
+            <p class="small muted">Action đơn giản nhất: mở app → xem báo cáo chi tiêu.</p>
+            <span class="tag green">2 thao tác chính</span>
+          </div>
+          <div>
+            <span class="hook-index">03 · Variable Reward</span>
+            <h3>Thấy pattern chi tiêu</h3>
+            <p class="small muted"><b>The Self:</b> cảm giác làm chủ và tiến bộ tài chính.</p>
+          </div>
+          <div>
+            <span class="hook-index">04 · Investment</span>
+            <h3>Nhập chi, sửa danh mục</h3>
+            <p class="small muted">Dữ liệu chi tiêu càng nhiều, báo cáo càng chính xác → insight tốt hơn lần sau.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11 METRIC TRACKING REQUIREMENT -->
+      <section class="page" id="page-11" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">11 · Metric Tracking Requirement</span>
+            <h2>Metric có công thức; event có điều kiện ghi rõ ràng</h2>
+            <p>Tracking chỉ thu dữ liệu cần để tính các metric đã chọn, không thu nội dung SMS đầy đủ vào analytics.</p>
+          </div>
+        </div>
+
+        <h3>Bảng định nghĩa metric</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Metric</th><th>Câu hỏi / định nghĩa</th><th>Công thức & window</th><th>Segment</th><th>Event</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Activation Rate</b></td>
+                <td>Bao nhiêu user đạt first value?</td>
+                <td>Unique activated users / unique onboarding starters; daily.</td>
+                <td>source_mode, persona fit, device</td>
+                <td>onboarding_started, activation_achieved</td>
+              </tr>
+              <tr>
+                <td><b>Median TTFC</b></td>
+                <td>Mất bao lâu tới core action đầu?</td>
+                <td>Median(first report_viewed − onboarding_started); daily.</td>
+                <td>sample / manual / SMS</td>
+                <td>onboarding_started, report_viewed</td>
+              </tr>
+              <tr>
+                <td><b>D1 Retention</b></td>
+                <td>User quay lại ngày hôm sau?</td>
+                <td>Activated cohort active in D1 / activated cohort in D0.</td>
+                <td>early_month / late_month</td>
+                <td>activation_achieved, report_viewed</td>
+              </tr>
+              <tr>
+                <td><b>North Star</b></td>
+                <td>Bao nhiêu user có financial insight?</td>
+                <td>Unique user có report_viewed trong ngày.</td>
+                <td>persona, source_mode</td>
+                <td>report_viewed</td>
+              </tr>
+              <tr>
+                <td><b>Digest conversion</b></td>
+                <td>Nurture có dẫn tới value không?</td>
+                <td>Users xem báo cáo trong 24h sau digest_opened / users mở digest.</td>
+                <td>digest schedule, notification channel</td>
+                <td>digest_opened, report_viewed</td>
+              </tr>
+              <tr>
+                <td><b>Opt-out Rate</b></td>
+                <td>Nurture có gây phiền không?</td>
+                <td>Users tắt nhắc / users đã nhận ≥1 nhắc; rolling 28 days.</td>
+                <td>notification frequency</td>
+                <td>reminder_delivered, notification_opted_out</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:28px">Yêu cầu tracking event</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Event name</th><th>Ghi khi nào?</th><th>Identity</th><th>Properties tối thiểu</th><th>Metric</th><th>Chống trùng</th></tr></thead>
+            <tbody>
+              <tr><td><code>onboarding_started</code></td><td>Flow hiển thị và user bấm CTA bắt đầu lần đầu.</td><td>anonymous_id → user_id</td><td>flow_version, entry_point, timezone</td><td>Activation, TTFC</td><td>Một lần/flow_instance_id.</td></tr>
+              <tr><td><code>permission_result</code></td><td>User chọn allow hoặc deny.</td><td>user_id</td><td>source_type, result, prompt_version</td><td>Funnel</td><td>Chỉ ghi khi lựa chọn thay đổi.</td></tr>
+              <tr><td><code>expense_added</code></td><td>User thêm khoản chi thủ công.</td><td>user_id</td><td>amount, category, timestamp</td><td>Engagement</td><td>Ghi mỗi khi thêm mới.</td></tr>
+              <tr><td><code>report_viewed</code></td><td>User xem báo cáo chi tiêu.</td><td>user_id</td><td>timestamp, report_type (daily/weekly)</td><td>DAU, Retention, NSM</td><td>Debounce 5 phút.</td></tr>
+              <tr><td><code>insight_received</code></td><td>User nhận insight từ báo cáo.</td><td>user_id</td><td>timestamp, insight_type</td><td>Activation</td><td>Chỉ ghi 1 lần per session.</td></tr>
+              <tr><td><code>digest_opened</code></td><td>User mở digest từ notification/inbox.</td><td>user_id</td><td>digest_id, channel, task_count</td><td>Digest conversion</td><td>Một open chính/digest/user.</td></tr>
+              <tr><td><code>notification_opted_out</code></td><td>Preference chuyển từ enabled sang disabled.</td><td>user_id</td><td>channel, reason, prior_frequency</td><td>Guardrail</td><td>Không ghi lại khi refresh settings.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card tint-blue">
+          <h3>Event gắn lên onboarding flow</h3>
+          <div class="flow">
+            <div class="flow-step"><span class="event-chip">onboarding_started</span><b>CTA bắt đầu</b><small>Tạo flow_instance_id.</small></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><span class="event-chip">permission_result</span><b>Chọn nguồn</b><small>Allow/deny hoặc sample/manual.</small></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><span class="event-chip">expense_added</span><b>Nhập khoản chi</b><small>Nếu chọn manual.</small></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><span class="event-chip">report_viewed</span><b>First core action</b><small>Xem báo cáo.</small></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><span class="event-chip">insight_received</span><b>First value</b><small>Insight hiển thị.</small></div>
+          </div>
+        </div>
+
+        <div class="card tint-green" style="margin-top:18px">
+          <h3>Tiêu chí nghiệm thu tracking</h3>
+          <div class="acceptance">
+            <div>Event chỉ ghi khi hành vi hoặc state transition thực sự xảy ra.</div>
+            <div>Refresh, retry, back/forward và autosave không tạo core action trùng.</div>
+            <div>Mọi event có identity, timestamp UTC, user timezone và schema_version.</div>
+            <div>Idempotency key ổn định cho flow, expense và digest.</div>
+            <div>Event đủ properties để tính đúng công thức và segment đã nêu.</div>
+            <div>Analytics không lưu nội dung SMS đầy đủ, chỉ metadata cần thiết.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12 DEMO PATH -->
+      <section class="page" id="page-12" data-phase="day20">
+        <div class="section-head">
+          <div class="copy">
+            <span class="eyebrow">12 · Demo Path</span>
+            <h2>Kịch bản trình bày 8 phút</h2>
+            <p>Đi đúng thứ tự logic của đề: use case → cadence → core action → onboarding → measurement → habit → tracking.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="demo-row"><time>0:00–1:00</time><div><b>Problem, Persona, Why, Alternative</b><span class="small muted">Tab 01: đọc câu problem bằng lời user, persona sinh viên và daily alternative.</span></div></div>
+          <div class="demo-row"><time>1:00–1:50</time><div><b>Frequency, Core Action, Active User</b><span class="small muted">Tab 02–03: giải thích xem báo cáo và vì sao không dùng app open.</span></div></div>
+          <div class="demo-row"><time>1:50–2:40</time><div><b>Retention Metric</b><span class="small muted">Tab 03: D1/D7/D30 retention, tách đầu tháng và cuối tháng.</span></div></div>
+          <div class="demo-row"><time>2:40–4:20</time><div><b>Current flow → Redesigned onboarding</b><span class="small muted">Tab 04–05: nêu permission drop-off, chạy sample mode tới first core action và aha moment.</span></div></div>
+          <div class="demo-row"><time>4:20–5:15</time><div><b>North Star & Input Metrics</b><span class="small muted">Tab 08: Daily Users with a Financial Insight, ba input và trade-off notification.</span></div></div>
+          <div class="demo-row"><time>5:15–6:20</time><div><b>Nature, Nurture & Hook</b><span class="small muted">Tab 09–10: daily review, trigger "không biết tiền", reward The Self.</span></div></div>
+          <div class="demo-row"><time>6:20–7:15</time><div><b>Tracking Requirement</b><span class="small muted">Tab 11: công thức metric, event map, idempotency và privacy.</span></div></div>
+          <div class="demo-row"><time>7:15–8:00</time><div><b>Before/After & thay đổi quan trọng nhất</b><span class="small muted">Tab 06: TTFC 2 phút → 30 giây; chạy recovery sửa sai danh mục.</span></div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px">
+          <div class="card tint-green">
+            <span class="tag green">Thay đổi quan trọng nhất</span>
+            <h3 style="margin-top:12px">Từ "giải thích sản phẩm" sang "thực hiện core action"</h3>
+            <p>User thấy evidence và báo cáo thật trước khi bị yêu cầu đầu tư nhiều dữ liệu hoặc thời gian.</p>
+          </div>
+          <div class="card tint-yellow">
+            <span class="tag yellow">Rủi ro còn lại</span>
+            <h3 style="margin-top:12px">Kết quả đầu tiên có thể chưa đủ liên quan</h3>
+            <p>Giảm rủi ro bằng sample mode, edit inline, confidence, evidence và recovery không kết thúc ở lỗi.</p>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          Prototype này phân biệt rõ phần baseline Ngày 18 (tab 00 và recovery S6) với phần bổ sung Day 20 (tab 01–12). Toàn bộ nội dung chạy trong một file HTML, không cần API hoặc dữ liệu SMS thật.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const sections = [
+      { id: "00", label: "Prototype / Current State", group: "DAY 18 · PHẦN GỐC", phase: "day18" },
+      { id: "01", label: "Retention Canvas", group: "DAY 20 · USE CASE", phase: "day20" },
+      { id: "02", label: "Core Action & Active User", group: "DAY 20 · USE CASE", phase: "day20" },
+      { id: "03", label: "Frequency & Retention", group: "DAY 20 · USE CASE", phase: "day20" },
+      { id: "04", label: "Onboarding Audit", group: "DAY 20 · ACTIVATION", phase: "day20" },
+      { id: "05", label: "Redesigned Journey", group: "DAY 20 · ACTIVATION", phase: "day20" },
+      { id: "06", label: "Before / After & Recovery", group: "DAY 20 · ACTIVATION", phase: "day20" },
+      { id: "07", label: "Measurement Ladder", group: "DAY 20 · MEASUREMENT", phase: "day20" },
+      { id: "08", label: "North Star & Inputs", group: "DAY 20 · MEASUREMENT", phase: "day20" },
+      { id: "09", label: "Nature vs Nurture", group: "DAY 20 · HABIT", phase: "day20" },
+      { id: "10", label: "Hook Review", group: "DAY 20 · HABIT", phase: "day20" },
+      { id: "11", label: "Tracking Requirement", group: "DAY 20 · TRACKING", phase: "day20" },
+      { id: "12", label: "Demo Path · 8 phút", group: "DAY 20 · TRÌNH BÀY", phase: "day20" }
+    ];
+
+    const sidebar = document.getElementById("sidebar");
+    let lastGroup = "";
+
+    sections.forEach((section) => {
+      if (section.group !== lastGroup) {
+        const group = document.createElement("div");
+        group.className = "nav-label";
+        group.textContent = section.group;
+        sidebar.appendChild(group);
+        lastGroup = section.group;
+      }
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `nav-button phase-${section.phase}`;
+      button.id = `nav-${section.id}`;
+      button.innerHTML = `<span class="number">${section.id}</span><span class="label">${section.label}</span>`;
+      button.addEventListener("click", () => showPage(section.id));
+      sidebar.appendChild(button);
+    });
+
+    function showPage(id) {
+      document.querySelectorAll(".page").forEach((page) => page.classList.toggle("active", page.id === `page-${id}`));
+      sections.forEach((section) => document.getElementById(`nav-${section.id}`).classList.toggle("active", section.id === id));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      history.replaceState(null, "", `#${id}`);
+    }
+
+    const initialId = sections.some((section) => `#${section.id}` === location.hash) ? location.hash.slice(1) : "00";
+    showPage(initialId);
+
+    let eventSequence = 0;
+    let flowId = "";
+    let emittedEvents = new Set();
+
+    function newFlowId() {
+      return `flow_${Date.now().toString(36)}`;
+    }
+
+    function emitEvent(name, properties = {}, dedupeKey = name) {
+      const key = `${flowId}:${dedupeKey}`;
+      if (emittedEvents.has(key)) return;
+      emittedEvents.add(key);
+      eventSequence += 1;
+
+      const log = document.getElementById("eventLog");
+      if (eventSequence === 1) log.innerHTML = "";
+      const row = document.createElement("div");
+      const time = new Date().toLocaleTimeString("vi-VN", { hour12: false });
+      row.innerHTML = `<span>${time}</span> <b>${name}</b><br><span>${JSON.stringify({ flow_id: flowId, ...properties })}</span>`;
+      log.prepend(row);
+    }
+
+    function showPrototypeScreen(id, progress) {
+      document.querySelectorAll(".prototype-screen").forEach((screen) => screen.classList.toggle("active", screen.id === id));
+      document.getElementById("prototypeProgress").style.width = `${progress}%`;
+    }
+
+    function resetPrototype() {
+      eventSequence = 0;
+      flowId = newFlowId();
+      emittedEvents = new Set();
+      document.getElementById("eventLog").innerHTML = "<div><span>Chưa có event. Bấm 'Thử ngay'.</span></div>";
+      document.getElementById("expenseAmount").value = "50,000 ₫";
+      document.getElementById("expenseCategory").selectedIndex = 0;
+      showPrototypeScreen("proto-welcome", 20);
+    }
+
+    function startPrototype() {
+      if (!flowId) flowId = newFlowId();
+      emitEvent("onboarding_started", { flow_version: "day20_v1", entry_point: "prototype" });
+      showPrototypeScreen("proto-source", 42);
+    }
+
+    function enterExpense() {
+      const amount = document.getElementById("expenseAmount").value;
+      const category = document.getElementById("expenseCategory").value;
+      emitEvent("expense_added", { amount, category, source_mode: "manual" });
+      emitEvent("report_viewed", { source_mode: "manual" }, "report_manual");
+      
+      document.getElementById("totalExpense").textContent = amount;
+      document.getElementById("expenseAmountDisplay").textContent = amount;
+      document.getElementById("categoryName").textContent = category.split(" ")[1] || category;
+      document.getElementById("categoryIcon").textContent = category.split(" ")[0] || "💰";
+      
+      showPrototypeScreen("proto-report", 76);
+    }
+
+    function useSample() {
+      emitEvent("expense_added", { amount: "50,000 ₫", category: "Trà sữa", source_mode: "sample" });
+      emitEvent("report_viewed", { source_mode: "sample" }, "report_sample");
+      
+      document.getElementById("totalExpense").textContent = "50,000 ₫";
+      document.getElementById("expenseAmountDisplay").textContent = "50,000 ₫";
+      document.getElementById("categoryName").textContent = "Trà sữa";
+      document.getElementById("categoryIcon").textContent = "🍹";
+      
+      showPrototypeScreen("proto-report", 76);
+    }
+
+    function grantPermission() {
+      emitEvent("permission_result", { source_type: "SMS", result: "allowed" });
+      goToHabit('allowed');
+    }
+
+    function denyPermission() {
+      emitEvent("permission_result", { source_type: "SMS", result: "denied" });
+      showPrototypeScreen("proto-denied", 85);
+    }
+
+    function showInsight() {
+      emitEvent("insight_received", { insight_type: "spending_pattern" });
+      showPrototypeScreen("proto-value", 100);
+      
+      window.setTimeout(() => {
+        emitEvent("activation_achieved", { source_mode: "prototype", evidence_rendered: true }, "activation_v1");
+      }, 150);
+    }
+
+    function goToSetup() {
+      emitEvent("setup_started", { flow_stage: "advanced" });
+      showPrototypeScreen("proto-permission", 85);
+    }
+
+    function goToHabit(status) {
+      if (status === 'allowed') {
+        emitEvent("habit_loop_entered", { SMS_connected: true });
+      } else {
+        emitEvent("habit_loop_entered", { SMS_connected: false });
+      }
+      showPrototypeScreen("proto-habit", 100);
+      
+      window.setTimeout(() => {
+        emitEvent("habit_streak_updated", { streak_days: 7 });
+      }, 150);
+    }
+
+    function logNextStep() {
+      emitEvent("priority_list_viewed", { expense_count: 3 });
+    }
+
+    function chooseRecoveryReason(reason) {
+      document.getElementById("recoveryReason").textContent = reason;
+      document.getElementById("recovery-stage-1").classList.add("hidden");
+      document.getElementById("recovery-stage-2").classList.remove("hidden");
+    }
+
+    function applyRecovery() {
+      const category = document.getElementById("correctCategory").value;
+      document.getElementById("recovery-stage-2").classList.add("hidden");
+      document.getElementById("recovery-stage-3").classList.remove("hidden");
+      document.getElementById("recoveryResult").textContent = `Danh mục đã đổi thành "${category.split(" ")[1] || category}". Khoản chi được cập nhật; báo cáo được tính lại theo dữ liệu mới.`;
+    }
+
+    function reviewRelated() {
+      document.getElementById("relatedResult").classList.remove("hidden");
+    }
+
+    resetPrototype();
+  </script>
+</body>
+</html>
