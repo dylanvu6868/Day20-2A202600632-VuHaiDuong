@@ -125,5 +125,4 @@ Tệp prototype tương tác hoàn chỉnh đã được xây dựng tại: [lab
    * **Live Event Log:** Hộp console hiển thị thời gian thực các sự kiện phân tích (`onboarding_started`, `expense_added`, `report_viewed`, `permission_result`, `habit_loop_entered`) được gửi đi khi user thao tác trên điện thoại ảo.
 3. **Interactive Recovery Path (Page 06):**
    * Mô phỏng kịch bản khôi phục lỗi khi AI phân loại nhầm danh mục chi tiêu (Sửa từ "Giải trí" thành "Ăn uống" và tiến hành rà soát các khoản chi liên đới).
-#   D a y 2 0 - 2 A 2 0 2 6 0 0 6 3 2 - V u H a i D u o n g  
- 
+#
